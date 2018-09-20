@@ -577,16 +577,16 @@ private:
  * Cordio HCI driver factory
  */
 ble::vendor::cordio::CordioHCIDriver& ble_cordio_get_hci_driver() {
-    static ble::vendor::bluenrg::TransportDriver transport_driver(
+    static ble::vendor::bluenrg::TransportDriver* transport_driver = new ble::vendor::bluenrg::TransportDriver(
         BLUENRG_PIN_SPI_MOSI,
         BLUENRG_PIN_SPI_MISO,
         BLUENRG_PIN_SPI_SCK,
         BLUENRG_PIN_SPI_nCS,
         BLUENRG_PIN_SPI_IRQ
     );
-    static ble::vendor::bluenrg::HCIDriver hci_driver(
-        transport_driver,
+    static ble::vendor::bluenrg::HCIDriver* hci_driver = new ble::vendor::bluenrg::HCIDriver(
+        *transport_driver,
         BLUENRG_PIN_SPI_RESET
     );
-    return hci_driver;
+    return *hci_driver;
 }
