@@ -28,6 +28,8 @@
 #define LL_WITHOUT_HOST_OFFSET 0x2C
 #define ROLE_OFFSET 0x2D
 
+#define SPI_STACK_SIZE 1024
+
 namespace ble {
 namespace vendor {
 namespace bluenrg {
@@ -417,7 +419,7 @@ public:
      * @param irq Pin used by the module to signal data are available.
      */
     TransportDriver(PinName mosi, PinName miso, PinName sclk, PinName ncs, PinName irq)
-        : spi(mosi, miso, sclk), nCS(ncs), irq(irq) {
+        : spi(mosi, miso, sclk), nCS(ncs), irq(irq), _spi_thread(osPriorityNormal, SPI_STACK_SIZE, _spi_thread_stack) {
         _spi_thread.start(callback(this, &TransportDriver::spi_read_cb));
     }
 
@@ -565,6 +567,7 @@ private:
     DigitalOut nCS;
     InterruptIn irq;
     rtos::Thread _spi_thread;
+    uint8_t _spi_thread_stack[SPI_STACK_SIZE];
     rtos::Semaphore _spi_read_sem;
     rtos::Mutex _spi_mutex;
 };
